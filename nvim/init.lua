@@ -1,56 +1,85 @@
-vim.o.lazyredraw = true
 vim.o.clipboard = 'unnamedplus'
-vim.o.relativenumber = true
-vim.o.number = true
-vim.o.numberwidth = 3
 vim.o.cursorline = true
 vim.o.cursorlineopt = 'number'
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.o.shiftwidth = 4
 vim.o.expandtab = true
-vim.o.scrolloff = 5
+vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.o.foldlevel = 999
+vim.o.foldmethod = 'expr'
+vim.o.foldtext = ''
+vim.o.grepprg = 'rg --vimgrep --no-messages --smart-case'
+vim.o.ignorecase = true
+vim.o.langmap = [=[ЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;~QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>,ёйцукенгшщзхъфывапролджэячсмитьбю;`qwertyuiop[]asdfghjkl\;'zxcvbnm\,.]=]
+vim.o.lazyredraw = true
 vim.o.linebreak = true
-vim.o.splitbelow = true
+vim.o.number = true
+vim.o.numberwidth = 3
+vim.o.relativenumber = true
+vim.o.scrolloff = 5
+vim.o.shiftwidth = 4
+vim.o.smartcase = true
+vim.o.smoothscroll = true
 vim.o.splitright = true
-vim.o.langmap =
-[=[ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯБЮЖЭХЪ;ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:"{},фисвуапршолдьтщзйкыегмцчнябюжэхъ;abcdefghijklmnopqrstuvwxyz\,.\;\'[]]=]
-vim.opt.wildoptions:append('fuzzy')
-vim.opt.guicursor:append('t:block-blinkon0-blinkoff0')
-vim.opt.dictionary:append('~/download/russian.utf-8')
-
-local handle = io.popen("gsettings get org.gnome.desktop.interface color-scheme")
-if handle ~= nil then
-    result = handle:read("*a")
-    handle:close()
-end
-
-if result:match("prefer%-light") then
-    vim.o.background = "light"
-else
-    vim.o.background = "dark"
-end
-
+vim.o.swapfile = false
+vim.o.tabstop = 4
 vim.o.termguicolors = true
-vim.cmd.colorscheme('gruv1')
-vim.g.netrw_liststyle = 3
-vim.g.netrw_banner = 0
-vim.g.mapleader = ' '
+vim.o.updatetime = 900
+vim.opt.dictionary:append('~/download/russian.utf-8')
+vim.opt.guicursor:append('t:block-blinkon0-blinkoff0')
+vim.opt.nrformats:append('blank')
+vim.opt.path:append { '**' }
+vim.opt.wildoptions:append('fuzzy')
+-- vim.opt.runtimepath:append('/usr/share/tree-sitter')
 
-vim.keymap.set({ 'n', 'v' }, '<Esc>', '<Esc>:nohlsearch<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>i',
-function()
-  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-end,
-{desc = "Toggle Inlay Hints"})
+vim.g.mapleader = ' '
+vim.g.netrw_banner = 0
+vim.g.netrw_liststyle = 3
+
+vim.cmd("syntax off")
+vim.cmd.colorscheme('gruv1')
+vim.cmd.packadd('cfilter')
+vim.cmd.packadd('nohlsearch')
+vim.cmd.packadd('nvim.difftool')
+vim.cmd.packadd('nvim.undotree')
+
+require('vim._core.ui2').enable {}
+
+vim.pack.add {
+    'https://github.com/neovim/nvim-lspconfig',
+}
+
+vim.lsp.enable({ 'lua_ls', 'clangd', 'ruff', 'ty', 'sqls', 'texlab', 'rust_analyzer', 'jdtls' })
+
+vim.api.nvim_set_keymap('i', '<Tab>', 'pumvisible() ? "<Down>" : "<Tab>"', {expr = true, noremap = true})
+vim.api.nvim_set_keymap('i', '<S-Tab>', 'pumvisible() ? "<Up>" : "<S-Tab>"', {expr = true, noremap = true})
+vim.api.nvim_set_keymap('i', '<CR>', 'pumvisible() ? "<C-Y>" : "<CR>"', { expr = true, noremap = true })
+
+vim.api.nvim_create_autocmd('FileType', {
+    callback = function() pcall(vim.treesitter.start) end,
+})
+
+vim.api.nvim_create_autocmd('TermOpen', {
+    callback = function()
+        vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true, buffer = true })
+    end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'html', 'markdown', 'tex', 'json', 'jsonc', 'kdl', 'css', 'lua', 'sql' },
+  callback = function()
+    vim.bo.shiftwidth = 2
+    vim.bo.tabstop = 2
+  end,
+})
 
 vim.api.nvim_create_autocmd('FileType', {
     pattern = { 'text', 'markdown', 'tex' },
     callback = function()
         vim.o.spell = true
         vim.o.spelllang = 'ru,en'
+        vim.o.spellfile = '~/.config/nvim/spell/ru-en.utf-8.add'
     end,
 })
+
 vim.api.nvim_create_autocmd('FileType', {
     pattern = 'markdown',
     callback = function()
@@ -58,74 +87,34 @@ vim.api.nvim_create_autocmd('FileType', {
         local output = vim.fn.expand('%:r') .. '.pdf'
         vim.o.makeprg = 'pandoc --read=markdown+tex_math_dollars+tex_math_single_backslash ' ..
             filename .. ' -o ' .. output ..
-            ' --pdf-engine=tectonic -V mainfont="Liberation Serif"'
+            ' --pdf-engine=tectonic -V mainfont="Libertinus Serif"'
     end,
 })
+
 vim.api.nvim_create_autocmd('FileType', {
     pattern = 'c',
     callback = function()
         vim.o.makeprg = 'gcc -Wall -Wextra -Wconversion -Wshadow %'
     end,
 })
+
 vim.api.nvim_create_autocmd('FileType', {
     pattern = 'cpp',
     callback = function()
         vim.o.makeprg = 'g++ -g $CXXFLAG %'
     end,
 })
+
 vim.api.nvim_create_autocmd('FileType', {
     pattern = 'python',
     callback = function()
         vim.o.makeprg = 'python %'
     end,
 })
+
 vim.api.nvim_create_autocmd('FileType', {
     pattern = 'tex',
     callback = function()
         vim.o.makeprg = 'tectonic %' -- 'latexmk -pdf -aux-directory=/tmp/ %'
     end,
 })
-vim.api.nvim_create_autocmd('TermOpen', {
-    callback = function()
-        vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true, buffer = true })
-    end,
-})
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'markdown', 'lua', 'tex', 'kdl', 'css', 'html' },
-  callback = function()
-    vim.bo.shiftwidth = 2
-  end,
-})
-
-vim.api.nvim_create_user_command("Pager", function()
-    vim.o.number = false
-    vim.o.relativenumber = false
-    local orig = vim.api.nvim_get_current_buf()
-    local lines = vim.api.nvim_buf_get_lines(orig, 0, -1, false)
-    local text = table.concat(lines, '\r\n') .. '\r\n'
-    vim.cmd('enew') -- create a new buffer
-    local chan = vim.api.nvim_open_term(0, {})
-    vim.api.nvim_chan_send(chan, text)
-    vim.api.nvim_buf_delete(orig, { force = true })
-end, {})
-
-vim.lsp.enable({ 'lua_ls', 'clangd', 'pylsp', 'ruff', 'ty', 'sqls', 'texlab', 'rust_analyzer' })
-
--- require('supermaven-nvim').setup {}
-
--- require("nvim-treesitter.configs").setup {
---     ensure_installed = { "c", "cpp", "kdl", "lua", "python", "rust", "vim", "markdown", "toml" },
---     sync_install = false,
---     highlight = { enable = true, disable = { "latex", "vimdoc" } },
---     indent = { enable = true },
---     modules = {},      -- explicitly add an empty table for modules
---     ignore_install = {}, -- explicitly add an empty table for ignore_install
---     auto_install = true, -- explicitly set auto_install to false
---     incremental_selection = {
---         enable = true,
---         keymaps = {
---             node_incremental = "v",
---             node_decremental = "V",
---         },
---     }
--- }
