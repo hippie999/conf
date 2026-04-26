@@ -1,5 +1,4 @@
 vim.o.autocomplete = true
-vim.o.autocompletedelay = 300
 vim.o.clipboard = 'unnamedplus'
 vim.o.cursorline = true
 vim.o.cursorlineopt = 'number'
@@ -8,7 +7,7 @@ vim.o.expandtab = true
 vim.o.foldlevel = 999
 vim.o.foldmethod = 'expr'
 vim.o.foldtext = ''
-vim.o.grepprg = 'rg --vimgrep --no-messages --smart-case'
+-- vim.o.grepprg = 'rg --vimgrep --no-messages --smart-case'
 vim.o.ignorecase = true
 vim.o.langmap = [=[ЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;~QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>,ёйцукенгшщзхъфывапролджэячсмитьбю;`qwertyuiop[]asdfghjkl\;'zxcvbnm\,.]=]
 vim.o.lazyredraw = true
@@ -25,6 +24,9 @@ vim.o.swapfile = false
 vim.o.tabstop = 4
 vim.o.termguicolors = true
 vim.o.updatetime = 900
+vim.o.complete = "o,.,w,b,u,t,kspell"
+-- vim.opt.complete:append('o')
+vim.opt.completeopt:append { 'noinsert', 'fuzzy' }
 vim.opt.dictionary:append('~/download/russian.utf-8')
 vim.opt.guicursor:append('t:block-blinkon0-blinkoff0')
 vim.opt.nrformats:append('blank')
@@ -59,18 +61,6 @@ vim.api.nvim_create_autocmd('FileType', {
     callback = function() pcall(vim.treesitter.start) end,
 })
 
-vim.api.nvim_create_autocmd('LspAttach', {
-    callback = function(args)
-        vim.o.signcolumn = 'yes:1'
-        local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-        if client:supports_method('textDocument/completion') then
-            vim.o.complete = 'o,.,w,b,u'
-            vim.o.completeopt = 'menu,menuone,popup,noinsert'
-            vim.lsp.completion.enable(true, client.id, args.buf)
-        end
-    end
-})
-
 vim.api.nvim_create_autocmd('TermOpen', {
     callback = function()
         vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true, buffer = true })
@@ -90,7 +80,7 @@ vim.api.nvim_create_autocmd('FileType', {
     callback = function()
         vim.o.spell = true
         vim.o.spelllang = 'ru,en'
-        vim.o.spellfile = '~/.config/nvim/spell/ru-en.utf-8.add'
+        vim.o.spellfile = vim.fn.expand("~/.config/nvim/spell/ru-en.utf-8.add")
     end,
 })
 
