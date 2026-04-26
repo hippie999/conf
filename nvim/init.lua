@@ -1,8 +1,10 @@
+vim.o.autocomplete = true
+vim.o.autocompletedelay = 300
 vim.o.clipboard = 'unnamedplus'
 vim.o.cursorline = true
 vim.o.cursorlineopt = 'number'
 vim.o.expandtab = true
-vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+-- vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 vim.o.foldlevel = 999
 vim.o.foldmethod = 'expr'
 vim.o.foldtext = ''
@@ -47,7 +49,7 @@ vim.pack.add {
     'https://github.com/neovim/nvim-lspconfig',
 }
 
-vim.lsp.enable({ 'lua_ls', 'clangd', 'ruff', 'ty', 'sqls', 'texlab', 'rust_analyzer', 'jdtls' })
+vim.lsp.enable({ 'lua_ls', 'clangd', 'ty', 'sqls', 'texlab', 'rust_analyzer', 'jdtls' })
 
 vim.api.nvim_set_keymap('i', '<Tab>', 'pumvisible() ? "<Down>" : "<Tab>"', {expr = true, noremap = true})
 vim.api.nvim_set_keymap('i', '<S-Tab>', 'pumvisible() ? "<Up>" : "<S-Tab>"', {expr = true, noremap = true})
@@ -55,6 +57,18 @@ vim.api.nvim_set_keymap('i', '<CR>', 'pumvisible() ? "<C-Y>" : "<CR>"', { expr =
 
 vim.api.nvim_create_autocmd('FileType', {
     callback = function() pcall(vim.treesitter.start) end,
+})
+
+vim.api.nvim_create_autocmd('LspAttach', {
+    callback = function(args)
+        vim.o.signcolumn = 'yes:1'
+        local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+        if client:supports_method('textDocument/completion') then
+            vim.o.complete = 'o,.,w,b,u'
+            vim.o.completeopt = 'menu,menuone,popup,noinsert'
+            vim.lsp.completion.enable(true, client.id, args.buf)
+        end
+    end
 })
 
 vim.api.nvim_create_autocmd('TermOpen', {
