@@ -26,6 +26,7 @@ vim.o.termguicolors = true
 vim.o.updatetime = 900
 vim.o.complete = "o,.,w,b,u,t,kspell"
 -- vim.opt.complete:append('o')
+vim.o.confirm = true
 vim.opt.completeopt:append { 'noinsert', 'fuzzy' }
 vim.opt.dictionary:append('~/download/russian.utf-8')
 vim.opt.guicursor:append('t:block-blinkon0-blinkoff0')
