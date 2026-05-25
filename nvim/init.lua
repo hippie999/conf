@@ -1,4 +1,4 @@
-vim.o.autocomplete = true
+-- vim.o.autocomplete = true
 vim.o.clipboard = 'unnamedplus'
 vim.o.cursorline = true
 vim.o.cursorlineopt = 'number'
@@ -24,10 +24,9 @@ vim.o.swapfile = false
 vim.o.tabstop = 4
 vim.o.termguicolors = true
 vim.o.updatetime = 900
-vim.o.complete = "o,.,w,b,u,t,kspell"
--- vim.opt.complete:append('o')
+-- vim.o.complete = "o,.,w,b,u,t,kspell"
 vim.o.confirm = true
-vim.opt.completeopt:append { 'noinsert', 'fuzzy' }
+-- vim.opt.completeopt:append { 'noinsert', 'fuzzy' }
 vim.opt.dictionary:append('~/download/russian.utf-8')
 vim.opt.guicursor:append('t:block-blinkon0-blinkoff0')
 vim.opt.nrformats:append('blank')
@@ -52,7 +51,7 @@ vim.pack.add {
     'https://github.com/neovim/nvim-lspconfig',
 }
 
-vim.lsp.enable({ 'lua_ls', 'clangd', 'ty', 'sqls', 'texlab', 'rust_analyzer', 'jdtls' })
+vim.lsp.enable({ 'lua_ls', 'clangd', 'ty', 'ruff', 'sqls', 'texlab', 'rust_analyzer', 'jdtls' })
 
 vim.api.nvim_set_keymap('i', '<Tab>', 'pumvisible() ? "<Down>" : "<Tab>"', {expr = true, noremap = true})
 vim.api.nvim_set_keymap('i', '<S-Tab>', 'pumvisible() ? "<Up>" : "<S-Tab>"', {expr = true, noremap = true})
