@@ -1,4 +1,261 @@
 input {
+  // // this can be setting using localectl 
+  // keyboard {
+  //   track-layout "window"
+  //   numlock
+  //   xkb {
+  //     layout "us,ru"
+  //     options "grp:alt_shift_toggle" // grp:caps_toggle
+  //   }
+  // }
+  touchpad {
+    natural-scroll
+    tap
+    // dwt
+  }
+
+  mouse {
+    accel-speed -0.4
+  }
+
+  disable-power-key-handling
+  warp-mouse-to-focus
+  focus-follows-mouse max-scroll-amount="67%"
+}
+
+binds {
+  Mod+Shift+Slash { show-hotkey-overlay; }
+
+  Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "sh" "-c" "alacritty msg create-window || exec alacritty"; }
+  Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
+  Mod+M hotkey-overlay-title="Toggle waybar view" { spawn "killall" "-SIGUSR1" "waybar"; }
+  Mod+Shift+B hotkey-overlay-title="Open a Webbrowser: firefox" { spawn "firefox";}
+
+  Mod+P hotkey-overlay-title="Lock the Screen: swaylock" { spawn "sh" "-c" "exec swaylock"; }
+  Mod+T hotkey-overlay-title="transleate selected area" { spawn "niri_ptext.sh"; }
+
+  XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "set" "1%+"; }
+  XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "1%-"; }
+
+  XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.01+"; }
+  XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.01-"; }
+  XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+  XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+
+  Mod+O repeat=false { toggle-overview; }
+
+  Mod+Q { close-window; }
+
+  Mod+Left  { focus-column-left-or-last; }
+  Mod+Down  { focus-window-or-workspace-down; }
+  Mod+Up    { focus-window-or-workspace-up; }
+  Mod+Right { focus-column-right-or-first; }
+
+  Mod+H     { focus-column-left-or-last; }
+  Mod+J     { focus-window-or-workspace-down; }
+  Mod+K     { focus-window-or-workspace-up; }
+  Mod+L     { focus-column-right-or-first; }
+
+  Mod+Shift+H     { move-column-left-or-to-monitor-left; }
+  Mod+Shift+J     { move-window-down-or-to-workspace-down; }
+  Mod+Shift+K     { move-window-up-or-to-workspace-up; }
+  Mod+Shift+L     { move-column-right-or-to-monitor-right; }
+
+  Mod+Shift+Left  { move-column-left-or-to-monitor-left; }
+  Mod+Shift+Down  { move-window-down-or-to-workspace-down; }
+  Mod+Shift+Up    { move-window-up-or-to-workspace-up; }
+  Mod+Shift+Right { move-column-right-or-to-monitor-right; }
+
+  Mod+0 { focus-column-first; }
+  Mod+Shift+0  { focus-column-last; }
+
+  Mod+Shift+U { move-workspace-down; }
+  Mod+Shift+I { move-workspace-up; }
+
+  Mod+BracketLeft  { consume-or-expel-window-left; }
+  Mod+BracketRight { consume-or-expel-window-right; }
+
+  Mod+Comma  { consume-window-into-column; }
+  Mod+Period { expel-window-from-column; }
+
+  // Mod+Tab { focus-workspace-previous; }
+
+  Mod+R { switch-preset-column-width; }
+  Mod+Shift+R { switch-preset-window-height; }
+  Mod+E { expand-column-to-available-width; }
+  Mod+F { maximize-column; }
+  Mod+Shift+F { fullscreen-window; }
+
+  Mod+C { center-column; }
+  Mod+X { center-visible-columns; }
+
+  Mod+Minus { set-column-width "-10%"; }
+  Mod+Equal { set-column-width "+10%"; }
+
+  Mod+Shift+Minus { set-window-height "-10%"; }
+  Mod+Shift+Equal { set-window-height "+10%"; }
+
+  // Move the focused window between the floating and the tiling layout.
+  Mod+Shift+Space { toggle-window-floating; }
+  Mod+Space { switch-focus-between-floating-and-tiling; }
+
+  Mod+W { toggle-column-tabbed-display; }
+
+  Mod+Shift+S { screenshot; } // screenshot-window
+  Print { screenshot; }
+  Ctrl+Print { screenshot-screen; }
+  Alt+Print { screenshot-window; }
+
+  Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+  Mod+Shift+E { quit; }
+
+  Mod+Shift+P { power-off-monitors; }
+}
+
+layout {
+  gaps 9
+  always-center-single-column
+  focus-ring {
+    width 2
+    active-color "#b8bb26"
+    urgent-color "#fe8019"
+  }
+  border {
+    off
+  }
+  shadow {
+    on // TODO normal shadow style
+  }
+  tab-indicator {
+    hide-when-single-tab
+    gap 4
+    width 3
+    position "right"
+    gaps-between-tabs 7
+    corner-radius 7
+  }
+  insert-hint {
+    color "#b8bb2690"
+  }
+  background-color "#282828"
+}
+
+// spawn-at-startup "alacritty"
+
+prefer-no-csd
+
+// screenshot-path "~/Pictures/screenshot%Y-%m-%d.png"
+screenshot-path "~/Pictures/screenshot.png"
+
+/-environment {
+  QT_QPA_PLATFORM "wayland"
+  // QT_QPA_PLATFORMTHEME "qt5ct"
+  GTK_THEME "Gruvbox-Dark"
+  // DISPLAY null
+}
+
+cursor {
+    xcursor-theme "Capitaine Gruvbox Gruvbox Light"
+    xcursor-size 32
+}
+
+overview {
+  backdrop-color "#1c1c1c"
+}
+
+xwayland-satellite {
+  // off
+}
+
+hotkey-overlay {
+  skip-at-startup
+  hide-not-bound
+}
+
+window-rule { // add rounded border to all windows
+  geometry-corner-radius 7
+  clip-to-geometry true
+}
+
+/-window-rule { // make all inactive windows semi-transparent
+  match is-focused=false
+  exclude app-id=r#"foot$"#
+  exclude app-id=r#"Alacritty$"#
+  // exclude app-id=r#"Firefox$"#
+  // exclude app-id=r#"mpv$"#
+  opacity 0.81
+}
+
+/-window-rule { // make transparent inactive windows semi-transparent
+  match app-id=r#"foot$"# is-focused=false
+  match app-id=r#"Alacritty$"# is-focused=false
+  opacity 0.9
+}
+
+window-rule { // fix wezterm
+  match app-id=r#"^org\.wezfurlong\.wezterm$"#
+  default-column-width {}
+}
+
+window-rule { // set 1/3 with
+  match app-id=r#"firefox"#
+  // block-out-from "screen-capture"
+  default-column-width { proportion 0.66667; }
+}
+
+window-rule {
+    match app-id=r#"Firefox$"# title="^Picture-in-Picture$"
+    match app-id=r#"Firefox"# title="Library"
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    match app-id=r#"Helvum"#
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.7; }
+    open-floating true
+}
+
+/-window-rule { // hide window contend while it captured
+  match title="OBS"
+  match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+  match app-id=r#"^org\.gnome\.World\.Secrets$"#
+
+  block-out-from "screen-capture"
+
+  // Use this instead if you want them visible on third-party screenshot tools.
+  // block-out-from "screencast"
+}
+
+window-rule { // off borders from all wine(exe) apps
+    match app-id=r#".*\.exe$"#
+    border {
+	off
+    }
+    focus-ring {
+	off
+    }
+}
+
+layer-rule {
+  // match namespace="^wallpaper$"
+  match namespace="waybar"
+  place-within-backdrop true
+}
+
+layer-rule {
+  // match namespace="^launcher$"
+  match namespace="^notifications$"
+  baba-is-float true
+}
+
+recent-windows {
+  highlight {
+    active-color "#b8bb26"
+    urgent-color "#fe8019"
+    padding 9
+    corner-radius 7
+  }
+}
+input {
   // keyboard {
   //   track-layout "window"
   //   numlock
