@@ -1,70 +1,113 @@
-* {
-  margin: 0px;
-  padding: 0px;
-  background: none;
-  box-shadow: none;
-  border: none;
-  font-family: "Iosevka Nerd Font Propo", "Font Awesome 7 Free", monospace;
-}
-
-#waybar {
-  background-color: rgba(0, 0, 0, 0);
-}
-
-window > box {
-  margin: 2px 9px 0px;
-}
-
-tooltip,
-.modules-left,
-#window,
-#mpris,
-#tray,
-#wireplumber,
-#language,
-#hardware,
-#network,
-#clock,
-#power {
-  color: alpha(@theme_text_color, 1);
-  background-color: alpha(@theme_bg_color, 0.8);
-  box-shadow: 0px 1px 5px -3px #000;
-  border-radius: 7px;
-  border: 2px solid #b8bb26;
-  /* border: 2px solid #3c3836; */
-  font-size: 14px;
-  padding: 0px 3px;
-}
-
-.modules-left {
-  padding: 0px;
-}
-
-#cpu,
-#backlight {
-  margin-right: 8px;
-}
-
-window#waybar.empty #window {
-  margin: 0;
-  padding: 0;
-  background: none;
-  box-shadow: none;
-  border: none;
-}
-
-/* #workspaces button { */
-/*   background: #00f; */
-/* } */
-
-#workspaces button > * {
-  font-size: 0px;
-  background: alpha(@theme_text_color, .4);
-  margin: .6rem .5rem;
-  border-radius: 7px;
-}
-
-#workspaces button.focused > * {
-  background: alpha(@theme_text_color, 1);
-  padding: 0 1.1rem;
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 3,
+  "modules-left": [ "niri/workspaces" ],
+  "modules-center": [ "niri/window" ],
+  "modules-right": [ "mpris", "tray", "group/volume", "niri/language", "group/hardware", "network", "clock", "group/power" ],
+  "group/hardware": {
+    "orientation": "horizontal",
+    "modules": [ "cpu", "temperature", "memory" ],
+  },
+  "group/volume": {
+    "orientation": "horizontal",
+    "modules": [ "wireplumber#sink", "wireplumber#source" ],
+  },
+  "group/power": {
+    "orientation": "horizontal",
+    "modules": [ "backlight", "battery" ],
+  },
+  "niri/workspaces": {
+    "format": "",
+    "format-icons": {
+      "active": "",
+      "default": "",
+    },
+  },
+  "niri/window": {
+    "tooltip": false,
+    "icon": true,
+    "icon-size": 16,
+    "max-length": 50,
+  },
+  "mpris": {
+    "format": "{status_icon} {dynamic}",
+    "format-paused": "{status_icon} <i>{dynamic}</i>",
+    "status-icons": {
+      "playing": "⏸",
+      "default": ""
+    },
+    "max-length": 33,
+  },
+  "tray": {
+    "icon-size": 16,
+    "show-passive-items": true,
+  },
+  "wireplumber#sink": {
+    "format": "{icon}{volume:3}%",
+    "format-muted": " ",
+    "format-icons": ["", "", ""],
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "helvum",
+    "scroll-step": 0.6,
+    "reverse-scrolling": true,
+  },
+  "wireplumber#source": {
+    "node-type": "Audio/Source",
+    "format": " {volume:3}%",
+    "format-muted": " ",
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
+    "scroll-step": 0.1,
+    "reverse-scrolling": true,
+  },
+  "niri/language": {
+    "format": "  {short:2}",
+    "on-click": "niri msg action switch-layout next",
+  },
+  "cpu": {
+    "format": "{usage:2}%",
+    // "format": " {icon0}{icon1}{icon2}{icon3}{usage:2}%",
+    // "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    "tooltip": false,
+  },
+  "temperature": {
+    "format-critical": "{temperatureC:3}°C",
+    "format": "{temperatureC:3}°C",
+    "tooltip": false,
+  },
+  "memory": {
+    "format": "  {used:0.1f}/{total:0.1f}G",
+    "tooltip": false,
+  },
+  "network": {
+    "format-wifi": " {signalStrength:2}%",
+    "format-disconnected": "",
+    "tooltip-format": "{essid}",
+  },
+  "backlight": {
+    "format": "{icon}{percent:2}%",
+    "format-icons": [ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" ],
+    "tooltip": false,
+    "reverse-scrolling": true,
+    "on-scroll-up": "brightnessctl set 1+",
+    "on-scroll-down": "brightnessctl set 1-",
+    "scroll-step": 0.01
+  },
+  "clock": {
+    "justify": "center", 
+    "format": " {:%H:%M}",
+    "format-alt": " {:%H:%M   %a %e %b %Y}", 
+    "tooltip": false,
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 20
+    },
+    "format": "{icon} {capacity:2}%",
+    "format-charging": " {capacity:2}%",
+    "format-plugged": " {capacity:2}%",
+    "format-icons": ["", "", "", "", ""]
+  },
 }
