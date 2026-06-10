@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /usr/bin/gcc "$@" -Wno-error=implicit-function-declaration -Wno-implicit-function-declaration
