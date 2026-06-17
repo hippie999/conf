@@ -1,25 +1,91 @@
+set nocompatible
+set backspace=indent,eol,start
+set hidden
+set incsearch
+set wildmenu
+set history=1000
+set ttimeoutlen=50
+set autoread
+set hlsearch
+"set background
+set encoding=utf-8
+set formatoptions=jcroql
+
+set clipboard=unnamedplus
+set cursorline
+set cursorlineopt=number
+set expandtab
+set foldlevel=999
+set foldmethod=expr
+set foldtext=
+set ignorecase
+set langmap=ЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;~QWERTYUIOP{}ASDFGHJKL:\\"ZXCVBNM<>,ёйцукенгшщзхъфывапролджэячсмитьбю;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.
+set lazyredraw
+set linebreak
+set number
+set numberwidth=3
+set relativenumber
+set scrolloff=5
+set shiftwidth=4
+set smartcase
+set smoothscroll
+set splitright
+set noswapfile
+set tabstop=4
+"set termguicolors
+set updatetime=900
+set confirm
+
+set dictionary+=~/download/russian.utf-8
+set path+=**
+set wildoptions+=fuzzy
+"set nrformats+=blank
+if has('gui_running')
+    set guicursor+=n-v-c:block-blinkon0-blinkoff0
+endif
+
+let mapleader = " "
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
-let g:netrw_liststyle = 3
-let g:netrw_winsize = 22
-if &t_Co >= 2
-    syntax on
-    if &t_Co >= 256
-        set termguicolors
-    endif
-    colorscheme retrobox1
-    set background=dark
-endif
-filetype plugin indent on
-set directory=$HOME/.vim/swp//
-set autoread
-set lazyredraw
-set clipboard=unnamedplus
-set laststatus=2 showcmd wildmenu wildoptions=fuzzy
-set relativenumber number numberwidth=3 cursorline cursorlineopt=number
-set hlsearch incsearch
-set ignorecase smartcase
-set shiftwidth=4 cindent expandtab smarttab
-set scrolloff=5
-noremap Q gq
-nnoremap <F4> :nohlsearch<cr>
+
+"syntax off
+"colorscheme gruv1
+
+inoremap <expr> <Tab> pumvisible() ? "\<Down>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<Up>" : "\<S-Tab>"
+inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
+
+" copy paste without system clipboard
+vnoremap <leader>y y:call system('qdbus org.kde.klipper /klipper setClipboardContents "$(cat)"', @")<CR>
+nnoremap <leader>y yy:call system('qdbus org.kde.klipper /klipper setClipboardContents "$(cat)"', @")<CR>
+nnoremap <leader>p :let @" = system('qdbus org.kde.klipper /klipper getClipboardContents')<CR>p
+vnoremap <leader>p "_d:let @" = system('qdbus org.kde.klipper /klipper getClipboardContents')<CR>p
+
+augroup VimConfig
+    autocmd!
+
+    autocmd FileType c,html,markdown,tex,json,jsonc,kdl,css,lua,sql 
+        \ setlocal shiftwidth=2 tabstop=2
+
+    autocmd FileType text,markdown,tex
+        \ setlocal spell spelllang=ru,en |
+        \ let &l:spellfile = expand('~/.config/nvim/spell/ru-en.utf-8.add')
+
+    autocmd FileType markdown
+        \ let b:filename = expand('%') |
+        \ let b:output = expand('%:r') . '.pdf' |
+        \ let &l:makeprg = 'pandoc --read=markdown+tex_math_dollars+tex_math_single_backslash ' . 
+        \ b:filename . ' -o ' . b:output . 
+        \ ' --pdf-engine=tectonic -V mainfont="Libertinus Serif"'
+
+    autocmd FileType c setlocal makeprg=gcc\ -Wall\ -Wextra\ -Wconversion\ -Wshadow\ %
+
+    autocmd FileType cpp setlocal makeprg=g++\ -g\ \$CXXFLAG\ %
+
+    autocmd FileType python setlocal makeprg=python\ %
+
+    autocmd FileType tex setlocal makeprg=tectonic\ %
+augroup END
