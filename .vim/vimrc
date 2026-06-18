@@ -1,17 +1,29 @@
-set nocompatible
-set backspace=indent,eol,start
+if &t_Co >= 2
+    syntax on
+    if &t_Co >= 256
+        set termguicolors
+    endif
+    colorscheme gruv1
+    set background=dark
+endif
+packadd! nohlsearch
+filetype plugin indent on
+
 set hidden
+set autoindent
 set incsearch
-set wildmenu
-set history=1000
-set ttimeoutlen=50
+set smartcase
+set completeopt+=menuone,noselect,noinsert
+"set ttimeoutlen=50
 set autoread
 set hlsearch
-"set background
 set encoding=utf-8
+set wildoptions=pum,tagfile,fuzzy
 set formatoptions=jcroql
+set laststatus=2
+"set showcmd
 
-set clipboard=unnamedplus
+"set clipboard=unnamedplus
 set cursorline
 set cursorlineopt=number
 set expandtab
@@ -20,6 +32,7 @@ set foldmethod=expr
 set foldtext=
 set ignorecase
 set langmap=ЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;~QWERTYUIOP{}ASDFGHJKL:\\"ZXCVBNM<>,ёйцукенгшщзхъфывапролджэячсмитьбю;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.
+set tags=$HOME/.vim/system.tags,tags
 set lazyredraw
 set linebreak
 set number
@@ -27,52 +40,63 @@ set numberwidth=3
 set relativenumber
 set scrolloff=5
 set shiftwidth=4
-set smartcase
 set smoothscroll
 set splitright
-set noswapfile
+set splitbelow
+"set noswapfile
+set directory=$HOME/.vim/swp//
 set tabstop=4
-"set termguicolors
 set updatetime=900
 set confirm
+set mouse=a
+"set statusline=%f\ %m%=%l:%c\ %p%%
 
-set dictionary+=~/download/russian.utf-8
+set dictionary+=$HOME/Downloads/russian.utf-8
 set path+=**
-set wildoptions+=fuzzy
-"set nrformats+=blank
 if has('gui_running')
     set guicursor+=n-v-c:block-blinkon0-blinkoff0
 endif
 
-let mapleader = " "
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
-
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_winsize = 22
+let mapleader = " "
 
-"syntax off
-"colorscheme gruv1
-
+noremap Q gq
 inoremap <expr> <Tab> pumvisible() ? "\<Down>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<Up>" : "\<S-Tab>"
 inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 
-" copy paste without system clipboard
-vnoremap <leader>y y:call system('qdbus org.kde.klipper /klipper setClipboardContents "$(cat)"', @")<CR>
-nnoremap <leader>y yy:call system('qdbus org.kde.klipper /klipper setClipboardContents "$(cat)"', @")<CR>
-nnoremap <leader>p :let @" = system('qdbus org.kde.klipper /klipper getClipboardContents')<CR>p
-vnoremap <leader>p "_d:let @" = system('qdbus org.kde.klipper /klipper getClipboardContents')<CR>p
+function! KlipperCopy()
+  let l:content = @"
+  call system('qdbus org.kde.klipper /klipper setClipboardContents ' . shellescape(l:content))
+endfunction
+
+function! KlipperPaste()
+  let @" = system('qdbus org.kde.klipper /klipper getClipboardContents')
+  let @" = substitute(@", '\n\+$', '', '')
+  normal! p
+endfunction
+
+nnoremap <leader>y y:call KlipperCopy()<CR>
+vnoremap <leader>y y:call KlipperCopy()<CR>
+nnoremap <leader>p :call KlipperPaste()<CR>
 
 augroup VimConfig
     autocmd!
+
+    autocmd TerminalOpen * 
+        \ setlocal nonumber norelativenumber |
+        \ tnoremap <buffer> <silent> <Esc> <C-\><C-n>
 
     autocmd FileType c,html,markdown,tex,json,jsonc,kdl,css,lua,sql 
         \ setlocal shiftwidth=2 tabstop=2
 
     autocmd FileType text,markdown,tex
         \ setlocal spell spelllang=ru,en |
-        \ let &l:spellfile = expand('~/.config/nvim/spell/ru-en.utf-8.add')
+        \ let &l:spellfile = expand('$HOME/.vim/spell/ru-en.utf-8.add')
 
     autocmd FileType markdown
         \ let b:filename = expand('%') |
@@ -88,4 +112,22 @@ augroup VimConfig
     autocmd FileType python setlocal makeprg=python\ %
 
     autocmd FileType tex setlocal makeprg=tectonic\ %
+augroup END
+
+
+if exists('g:loaded_nohlsearch')
+    finish
+endif
+let g:loaded_nohlsearch = 1
+
+func! s:Nohlsearch()
+    if v:hlsearch
+        call feedkeys("\<cmd>nohlsearch\<cr>", 'm')
+    endif
+endfunc
+
+augroup nohlsearch
+    au!
+    au CursorHold * call s:Nohlsearch()
+    au InsertEnter * call s:Nohlsearch()
 augroup END
