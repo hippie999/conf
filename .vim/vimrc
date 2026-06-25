@@ -6,6 +6,113 @@ if &t_Co >= 2
     "colorscheme gruv1
     "set background=dark
 endif
+"packadd! nohlsearch
+filetype plugin indent on
+
+set autoindent
+set hlsearch incsearch ignorecase smartcase 
+set hidden
+set autoread
+set laststatus=2
+set encoding=utf-8
+set wildmenu wildoptions=pum,tagfile,fuzzy
+set completeopt+=menuone,noselect,noinsert
+set formatoptions=jcroql
+"set ttimeoutlen=50
+"set showcmd
+
+"set clipboard=unnamedplus
+set cursorline cursorlineopt=number
+set foldtext=
+set foldlevel=999
+set foldmethod=expr
+set langmap=ЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;~QWERTYUIOP{}ASDFGHJKL:\\"ZXCVBNM<>,ёйцукенгшщзхъфывапролджэячсмитьбю;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.
+set tags=$HOME/.vim/system.tags,tags
+set lazyredraw
+set linebreak
+set number relativenumber numberwidth=3
+set expandtab shiftwidth=4 tabstop=4
+set smoothscroll scrolloff=5
+set splitright splitbelow
+"set noswapfile
+set directory=$HOME/.vim/swp//
+set updatetime=900
+set confirm
+set mouse=a
+"set statusline=%f\ %m%=%l:%c\ %p%%
+
+set dictionary+=$HOME/Downloads/russian.utf-8
+set path+=**
+if has('gui_running')
+    set guicursor+=n-v-c:block-blinkon0-blinkoff0
+endif
+
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_winsize = 22
+let mapleader = " "
+
+noremap Q gq
+inoremap <expr> <Tab> pumvisible() ? "\<Down>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<Up>" : "\<S-Tab>"
+inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
+
+function! KlipperCopy()
+  let l:content = @"
+  call system('qdbus org.kde.klipper /klipper setClipboardContents ' . shellescape(l:content))
+endfunction
+
+function! KlipperPaste()
+  let @" = system('qdbus org.kde.klipper /klipper getClipboardContents')
+  let @" = substitute(@", '\n\+$', '', '')
+  normal! p
+endfunction
+
+nnoremap <leader>y y:call KlipperCopy()<CR>
+vnoremap <leader>y y:call KlipperCopy()<CR>
+nnoremap <leader>p :call KlipperPaste()<CR>
+
+augroup VimConfig
+    autocmd!
+
+    autocmd TerminalOpen * 
+        \ setlocal nonumber norelativenumber |
+        \ tnoremap <buffer> <silent> <Esc> <C-\><C-n>
+
+    autocmd FileType c,html,markdown,tex,json,jsonc,kdl,css,lua,sql 
+        \ setlocal shiftwidth=2 tabstop=2
+
+    autocmd FileType text,markdown,tex
+        \ setlocal spell spelllang=ru,en |
+        \ let &l:spellfile = expand('$HOME/.vim/spell/ru-en.utf-8.add')
+
+    autocmd FileType markdown
+        \ let b:filename = expand('%') |
+        \ let b:output = expand('%:r') . '.pdf' |
+        \ let &l:makeprg = 'pandoc --read=markdown+tex_math_dollars+tex_math_single_backslash ' . 
+        \ b:filename . ' -o ' . b:output . 
+        \ ' --pdf-engine=tectonic -V mainfont="Libertinus Serif"'
+
+    autocmd FileType c setlocal makeprg=gcc\ -Wall\ -Wextra\ -Wconversion\ -Wshadow\ %
+
+    autocmd FileType cpp setlocal makeprg=g++\ -g\ \$CXXFLAG\ %
+
+    autocmd FileType python setlocal makeprg=python\ %
+
+    autocmd FileType tex setlocal makeprg=tectonic\ %
+augroup END
+
+
+if &t_Co >= 2
+    syntax on
+    "if &t_Co >= 256
+    "    set termguicolors
+    "endif
+    "colorscheme gruv1
+    "set background=dark
+endif
 packadd! nohlsearch
 filetype plugin indent on
 
